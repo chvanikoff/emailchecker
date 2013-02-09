@@ -56,7 +56,8 @@ handle_call(check, _From, _State = #state{domains = Domains}) ->
 handle_call(_Request, _From, State) -> {reply, ignored, State}.
 
 handle_cast({add_email, Email}, State = #state{domains = Domains}) ->
-	[Name, Domain] = string:tokens(Email, "@"),
+	Email2 = case is_binary(Email) of true -> binary_to_list(Email); _ -> Email end,
+	[Name, Domain] = string:tokens(Email2, "@"),
 	State2 = case domain_already_added(Domain, Domains) of
 		true -> State;
 		false -> State#state{domains = [#domain{mx = mxlookup(Domain), name = Domain} | Domains]}
