@@ -1,4 +1,5 @@
 -module(emailchecker_app).
+-author('chvanikoff <chvanikoff@gmail.com>').
 
 -behaviour(application).
 

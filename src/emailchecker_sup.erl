@@ -1,5 +1,5 @@
-
 -module(emailchecker_sup).
+-author('chvanikoff <chvanikoff@gmail.com>').
 
 -behaviour(supervisor).
 
@@ -29,4 +29,3 @@ init([]) ->
 		?CHILD(emailchecker_srv, worker)
 	],
     {ok, {Restart_strategy, Children}}.
-

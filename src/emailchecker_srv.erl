@@ -175,4 +175,3 @@ handle_sock(Sock, Account, Domain) ->
 		_ ->
 			false
 	end.
-
