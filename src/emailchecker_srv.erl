@@ -16,8 +16,6 @@
 %% API
 -export([
 	start_link/0,
-	add/1,
-	test/0,
 	check_email/1,
 	check_emails/1
 ]).
@@ -55,9 +53,6 @@ init([]) -> {ok, #state{}}.
 handle_call(check, _From, _State = #state{domains = Domains}) ->
 	Result = process_check(Domains),
 	{reply, Result, #state{}};
-handle_call(debug, _From, State) ->
-	io:format("~n~n~p~n~n", [State]),
-	{reply, okk, State};
 handle_call(_Request, _From, State) -> {reply, ignored, State}.
 
 handle_cast({add_email, Email}, State = #state{domains = Domains}) ->
