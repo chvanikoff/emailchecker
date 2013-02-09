@@ -1,0 +1,9 @@
+{application,emailchecker,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {mod,{emailchecker_app,[]}},
+              {env,[]},
+              {modules,[emailchecker,emailchecker_app,emailchecker_srv,
+                        emailchecker_sup,mxlookup]}]}.
