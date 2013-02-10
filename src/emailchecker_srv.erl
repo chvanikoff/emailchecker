@@ -57,10 +57,17 @@ handle_call(_Request, _From, State) -> {reply, ignored, State}.
 
 handle_cast({add_email, Email}, State = #state{domains = Domains}) ->
 	Email2 = case is_binary(Email) of true -> binary_to_list(Email); _ -> Email end,
-	[Name, Domain] = string:tokens(Email2, "@"),
+	[Name, Domain] = case string:tokens(Email2, "@") of
+		[] -> [Email2, invalid];
+		Valid -> Valid
+	end,
 	State2 = case domain_already_added(Domain, Domains) of
 		true -> State;
-		false -> State#state{domains = [#domain{mx = mxlookup(Domain), name = Domain} | Domains]}
+		false ->
+			case Domain of
+				invalid -> State#state{domains = [#domain{mx = [], name = Domain} | Domains]}
+				_ -> State#state{domains = [#domain{mx = mxlookup(Domain), name = Domain} | Domains]}
+			end
 	end,
 	Cur = lists:keyfind(Domain, #domain.name, State2#state.domains),
 	{_, _, Domains2} = lists:keytake(Domain, #domain.name, State2#state.domains),
@@ -116,6 +123,7 @@ process_check([_Domain = #domain{mx = Mx, accounts = Accounts, name = Name} | Do
 	Accounts_results = check_accounts(Accounts, Name, Mx),
 	process_check(Domains, lists:flatten([Accounts_results | Acc])).
 
+check_accounts(Accounts, invalid, _) -> fill_failed(Accounts, invalid);
 check_accounts(Accounts, Domain, []) -> fill_failed(Accounts, Domain);
 check_accounts(Accounts, Domain, Mx) -> check_accounts(Accounts, Domain, Mx, []).
 
@@ -123,7 +131,11 @@ fill_failed(Accounts, Domain) -> fill_failed(Accounts, Domain, []).
 
 fill_failed([], _Domain, Acc) -> Acc;
 fill_failed([Account | Accounts], Domain,  Acc) ->
-	fill_failed(Accounts, Domain, [{Account ++ "@" ++ Domain, invalid} | Acc]).
+	R = case Domain of
+		invalid -> Account;
+		_ -> Account ++ "@" ++ Domain
+	end,
+	fill_failed(Accounts, Domain, [{R, invalid} | Acc]).
 
 check_accounts([], _Domain, _Mx, Acc) -> Acc;
 check_accounts([Account | Accounts], Domain, Mx, Acc) ->
