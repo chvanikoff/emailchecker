@@ -65,7 +65,7 @@ handle_cast({add_email, Email}, State = #state{domains = Domains}) ->
 		true -> State;
 		false ->
 			case Domain of
-				invalid -> State#state{domains = [#domain{mx = [], name = Domain} | Domains]}
+				invalid -> State#state{domains = [#domain{mx = [], name = Domain} | Domains]};
 				_ -> State#state{domains = [#domain{mx = mxlookup(Domain), name = Domain} | Domains]}
 			end
 	end,
