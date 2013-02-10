@@ -32,6 +32,8 @@
 
 -define(TIMEOUT, 5000).
 
+-define(CHECK_TIMEOUT, 300000).
+
 %% ===================================================================
 %% API functions
 %% ===================================================================
@@ -113,7 +115,7 @@ add_emails([Email | Emails]) ->
 	add_emails(Emails).
 
 do_check() ->
-	gen_server:call(?MODULE, check).
+	gen_server:call(?MODULE, check, ?CHECK_TIMEOUT).
 
 process_check(Domains_data) ->
 	process_check(Domains_data, []).
